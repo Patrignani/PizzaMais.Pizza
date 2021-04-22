@@ -5,21 +5,27 @@ using System;
 
 namespace PizzaMais.Pizza.Core.SqlCommands
 {
-    public static class UnidadeMedidaSql
+    public static class IngredienteSql
     {
 
-        public static string Consulta(UnidadeMedidaFiltro filtro)
+        public static string Consulta(IngredienteFiltro filtro)
         {
-            var query = new Query("UnidadeMedida")
+            var query = new Query("Ingrediente")
                 .Select("Id", "Nome", "Ativo");
 
             if (filtro.Id.HasValue)
                 query.Where("Id", "@Id");
 
             if (!String.IsNullOrEmpty(filtro.Nome))
+            {
                 query.WhereLike("Nome", "@Nome + '%'");
+            }
+            else if (!String.IsNullOrEmpty(filtro.NomeIgual))
+            {
+                query.Where("Nome", "@NomeIgual");
+            }
 
-            if(filtro.Ativo.HasValue)
+            if (filtro.Ativo.HasValue)
                 query.Where("Ativo", "@Ativo");
 
             return query.ObterString();
@@ -27,7 +33,7 @@ namespace PizzaMais.Pizza.Core.SqlCommands
         }
 
         public static string Inserir() =>
-            @"INSERT INTO [dbo].[UnidadeMedida]
+            @"INSERT INTO [dbo].[Ingrediente]
             ([Nome]
             ,[Ativo]
             ,[DataCriacao]
@@ -40,7 +46,7 @@ namespace PizzaMais.Pizza.Core.SqlCommands
             @UsuarioIdCriacao)";
 
         public static string Update() =>
-            @"UPDATE [dbo].[UnidadeMedida]
+            @"UPDATE [dbo].[Ingrediente]
             SET [Nome] = @Nome
             ,[Ativo] = @Ativo
             ,[DataAtualizacao] = @DataAtualizacao
@@ -49,7 +55,7 @@ namespace PizzaMais.Pizza.Core.SqlCommands
             [Id] = @Id";
 
         public static string Delete() =>
-            @"DELETE [dbo].[UnidadeMedida]  WHERE [Id] = @Id";
+            @"DELETE [dbo].[Ingrediente]  WHERE [Id] = @Id";
 
     }
 }

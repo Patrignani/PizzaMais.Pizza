@@ -5,13 +5,12 @@ using System;
 
 namespace PizzaMais.Pizza.Core.SqlCommands
 {
-    public static class UnidadeMedidaSql
+    public static class BordaSql
     {
-
-        public static string Consulta(UnidadeMedidaFiltro filtro)
+        public static string Consulta(BordaFiltro filtro)
         {
-            var query = new Query("UnidadeMedida")
-                .Select("Id", "Nome", "Ativo");
+            var query = new Query("Borda")
+                .Select("Id", "Preco", "Nome", "Ativo");
 
             if (filtro.Id.HasValue)
                 query.Where("Id", "@Id");
@@ -19,29 +18,42 @@ namespace PizzaMais.Pizza.Core.SqlCommands
             if (!String.IsNullOrEmpty(filtro.Nome))
                 query.WhereLike("Nome", "@Nome + '%'");
 
-            if(filtro.Ativo.HasValue)
+            if (filtro.Ativo.HasValue)
                 query.Where("Ativo", "@Ativo");
 
-            return query.ObterString();
+            if (filtro.Preco.HasValue)
+            {
+                if (filtro.TermoBuscaPreco.HasValue)
+                {
+                    query.TermoPesquisa(filtro.TermoBuscaPreco, "@Preco");
+                }
+                else
+                {
+                    query.Where("Preco", "@Preco");
+                }
+            }
 
+            return query.ObterString();
         }
 
         public static string Inserir() =>
-            @"INSERT INTO [dbo].[UnidadeMedida]
+             @"INSERT INTO [dbo].[Borda]
             ([Nome]
+            ,[Preco]
             ,[Ativo]
             ,[DataCriacao]
             ,[UsuarioIdCriacao])
-        OUTPUT Inserted.Id
          VALUES
             (@Nome,
+            @Preco,
             @Ativo,
             @DataCriacao,
             @UsuarioIdCriacao)";
 
         public static string Update() =>
-            @"UPDATE [dbo].[UnidadeMedida]
+            @"UPDATE [dbo].[Borda]
             SET [Nome] = @Nome
+            ,[Preco] = @Preco
             ,[Ativo] = @Ativo
             ,[DataAtualizacao] = @DataAtualizacao
             ,[UsuarioIdAtualizacao] = @UsuarioIdAtualizacao
@@ -49,7 +61,6 @@ namespace PizzaMais.Pizza.Core.SqlCommands
             [Id] = @Id";
 
         public static string Delete() =>
-            @"DELETE [dbo].[UnidadeMedida]  WHERE [Id] = @Id";
-
+            @"DELETE [dbo].[Borda]  WHERE [Id] = @Id";
     }
 }

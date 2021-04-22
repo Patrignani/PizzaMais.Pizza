@@ -2,6 +2,7 @@
 using PizzaMais.Pizza.Communs.Interfaces.Repository;
 using PizzaMais.Pizza.Core.Repository;
 using System.Data;
+using System.Data.SqlClient;
 
 namespace PizzaMais.Pizza.Core
 {
@@ -11,14 +12,17 @@ namespace PizzaMais.Pizza.Core
         IDbTransaction _transaction = null;
 
         private IUnidadeMedidaRepository _unidadeMedidaRepository = null;
+        private IIngredienteRepository _ingredienteRepository = null;
+        private IBordaRepository _bordaRepository = null;
 
-        public UnitOfWork(IDbConnection connection)
+        public UnitOfWork(SqlConnection connection)
         {
             _connection = connection;
         }
 
         public IUnidadeMedidaRepository UnidadeMedidaRepository => _unidadeMedidaRepository != null ? _unidadeMedidaRepository : _unidadeMedidaRepository = new UnidadeMedidaRepository(_connection, _transaction);
-
+        public IIngredienteRepository IngredienteRepository => _unidadeMedidaRepository != null ? _ingredienteRepository : _ingredienteRepository = new IngredienteRepository(_connection, _transaction);
+        public IBordaRepository BordaRepository => _unidadeMedidaRepository != null ? _bordaRepository : _bordaRepository = new BordaRepository(_connection, _transaction);
 
         public void Begin()
         {
