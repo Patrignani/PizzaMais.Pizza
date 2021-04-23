@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PizzaMais.Pizza.Core.Middleware;
 using System.IO.Compression;
+using System.Text.Json.Serialization;
 
 namespace PizzaMais.Pizza.API
 {
@@ -29,7 +30,14 @@ namespace PizzaMais.Pizza.API
             {
                 options.Providers.Add<GzipCompressionProvider>();
             });
-            services.AddControllers().AddNewtonsoftJson();
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.IgnoreNullValues = true;
+            }).AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PizzaMais.Pizza.API", Version = "v1" });
