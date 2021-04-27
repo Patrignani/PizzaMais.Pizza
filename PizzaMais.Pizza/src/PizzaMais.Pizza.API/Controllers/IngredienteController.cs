@@ -2,6 +2,7 @@
 using PizzaMais.Pizza.Communs.filters;
 using PizzaMais.Pizza.Communs.Interfaces.Service;
 using PizzaMais.Pizza.Communs.Model;
+using System;
 using System.Threading.Tasks;
 
 namespace PizzaMais.Pizza.API.Controllers
@@ -18,7 +19,7 @@ namespace PizzaMais.Pizza.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAsync([FromQuery]IngredienteFiltro filtro) => Ok(await _service.ListarAsync(filtro));
+        public async Task<IActionResult> GetAsync([FromQuery] IngredienteFiltro filtro) => Ok(await _service.ListarAsync(filtro));
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAsync(int id) => Ok(await _service.ObterPorIdAsync(id));

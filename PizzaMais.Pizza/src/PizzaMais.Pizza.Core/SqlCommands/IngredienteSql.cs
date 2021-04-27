@@ -23,7 +23,7 @@ namespace PizzaMais.Pizza.Core.SqlCommands
             var query = consultas();
 
             if (filtro.Id.HasValue)
-                query.WhereRaw("CAST(Id AS NVARCHAR) LIKE CAST(@Id AS NVARCHAR) + '%';");
+                query.WhereRaw("CAST(Id AS NVARCHAR) LIKE CAST(@Id AS NVARCHAR) + '%' ");
 
             if (!String.IsNullOrEmpty(filtro.Nome))
             {
