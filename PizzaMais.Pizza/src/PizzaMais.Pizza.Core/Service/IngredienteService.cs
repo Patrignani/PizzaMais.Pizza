@@ -4,6 +4,7 @@ using PizzaMais.Pizza.Communs.Interfaces.Service;
 using PizzaMais.Pizza.Communs.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PizzaMais.Pizza.Core.Service
@@ -31,15 +32,7 @@ namespace PizzaMais.Pizza.Core.Service
         }
 
         public async Task DeletarAsync(int id) => await _uow.IngredienteRepository.DeletarAsync(id);
-        public async Task<Ingrediente> ObterPorIdAsync(int id)
-        {
-            var filtro = new IngredienteFiltro
-            {
-                Id = id
-            };
-
-            return await _uow.IngredienteRepository.ObterAsync(filtro);
-        }
+        public async Task<Ingrediente> ObterPorIdAsync(int id) => await _uow.IngredienteRepository.ObterAsync(id);
 
         public async Task<IEnumerable<Ingrediente>> ListarAsync(IngredienteFiltro filtro) =>
             await _uow.IngredienteRepository.LitarAsync(filtro);
@@ -50,7 +43,7 @@ namespace PizzaMais.Pizza.Core.Service
             {
                 NomeIgual = nome.Trim()
             };
-            var model = await _uow.IngredienteRepository.ObterAsync(filtro);
+            var model = (await _uow.IngredienteRepository.LitarAsync(filtro)).FirstOrDefault();
 
             if (model == null)
             {

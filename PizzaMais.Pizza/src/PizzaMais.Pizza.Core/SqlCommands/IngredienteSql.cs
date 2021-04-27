@@ -8,13 +8,22 @@ namespace PizzaMais.Pizza.Core.SqlCommands
     public static class IngredienteSql
     {
 
+        private static Query consultas() => new Query("Ingrediente").Select("Id", "Nome", "Ativo");
+
+        public static string ObterPorId()
+        {
+            var query = consultas()
+                   .Where("Id", "@Id");
+
+            return query.ObterString();
+        }
+
         public static string Consulta(IngredienteFiltro filtro)
         {
-            var query = new Query("Ingrediente")
-                .Select("Id", "Nome", "Ativo");
+            var query = consultas();
 
             if (filtro.Id.HasValue)
-                query.Where("Id", "@Id");
+                query.WhereRaw("CAST(Id AS NVARCHAR) LIKE CAST(@Id AS NVARCHAR) + '%';");
 
             if (!String.IsNullOrEmpty(filtro.Nome))
             {
