@@ -2,18 +2,28 @@
 using PizzaMais.Pizza.Core.Utils;
 using SqlKata;
 using System;
+using System.Linq;
 
 namespace PizzaMais.Pizza.Core.SqlCommands
 {
     public static class BordaSql
     {
+        private static Query consultas() => new Query("Borda").Select("Id", "Preco", "Nome", "Ativo");
+
+        public static string ObterPorId()
+        {
+            var query = consultas()
+                   .Where("Id", "@Id");
+
+            return query.ObterString();
+        }
+
         public static string Consulta(BordaFiltro filtro)
         {
-            var query = new Query("Borda")
-                .Select("Id", "Preco", "Nome", "Ativo");
+            var query = consultas();
 
             if (filtro.Id.HasValue)
-                query.Where("Id", "@Id");
+                query.WhereRaw("CAST(Id AS NVARCHAR) LIKE CAST(@Id AS NVARCHAR) + '%' ");
 
             if (!String.IsNullOrEmpty(filtro.Nome))
                 query.WhereLike("Nome", "@Nome + '%'");
@@ -22,16 +32,11 @@ namespace PizzaMais.Pizza.Core.SqlCommands
                 query.Where("Ativo", "@Ativo");
 
             if (filtro.Preco.HasValue)
-            {
-                if (filtro.TermoBuscaPreco.HasValue)
-                {
-                    query.TermoPesquisa(filtro.TermoBuscaPreco, "@Preco");
-                }
-                else
-                {
-                    query.Where("Preco", "@Preco");
-                }
-            }
+                query.WhereRaw("Preco >= @Preco");
+
+            query.MontarIngredienteOrderBy(filtro)
+               .Offset(filtro.Offset)
+               .Limit(filtro.Limit);
 
             return query.ObterString();
         }
@@ -43,6 +48,7 @@ namespace PizzaMais.Pizza.Core.SqlCommands
             ,[Ativo]
             ,[DataCriacao]
             ,[UsuarioIdCriacao])
+         OUTPUT Inserted.Id
          VALUES
             (@Nome,
             @Preco,
@@ -62,5 +68,41 @@ namespace PizzaMais.Pizza.Core.SqlCommands
 
         public static string Delete() =>
             @"DELETE [dbo].[Borda]  WHERE [Id] = @Id";
+
+        public static Query MontarIngredienteOrderBy(this Query query, BordaFiltro filtro)
+        {
+            if (filtro.OrderbyAsc.Any())
+            {
+                if (filtro.OrderbyAsc.Any(x => x.ToLower().Trim() == "nome"))
+                    query.OrderBy("Nome");
+
+                if (filtro.OrderbyAsc.Any(x => x.ToLower().Trim() == "id"))
+                    query.OrderBy("Id");
+
+                if (filtro.OrderbyAsc.Any(x => x.ToLower().Trim() == "preco"))
+                    query.OrderBy("preco");
+
+                if (filtro.OrderbyAsc.Any(x => x.ToLower().Trim() == "ativo"))
+                    query.OrderBy("Ativo");
+            }
+
+            if (filtro.OrderbyDesc.Any())
+            {
+                if (filtro.OrderbyDesc.Any(x => x.ToLower().Trim() == "nome"))
+                    query.OrderByDesc("Nome");
+
+                if (filtro.OrderbyDesc.Any(x => x.ToLower().Trim() == "id"))
+                    query.OrderByDesc("Id");
+
+                if (filtro.OrderbyAsc.Any(x => x.ToLower().Trim() == "preco"))
+                    query.OrderByDesc("preco");
+
+                if (filtro.OrderbyDesc.Any(x => x.ToLower().Trim() == "ativo"))
+                    query.OrderByDesc("Ativo");
+
+            }
+
+            return query;
+        }
     }
 }

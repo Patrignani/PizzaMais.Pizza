@@ -32,15 +32,7 @@ namespace PizzaMais.Pizza.Core.Service
 
         public async Task DeletarAsync(int id) => await _uow.UnidadeMedidaRepository.DeletarAsync(id);
 
-        public async Task<UnidadeMedida> ObterPorIdAsync(int id)
-        {
-            var filtro = new UnidadeMedidaFiltro
-            {
-                Id = id
-            };
-
-            return await _uow.UnidadeMedidaRepository.ObterAsync(filtro);
-        }
+        public async Task<UnidadeMedida> ObterPorIdAsync(int id) => await _uow.UnidadeMedidaRepository.ObterAsync(id);
 
         public async Task<IEnumerable<UnidadeMedida>> ListarAsync(UnidadeMedidaFiltro filtro) =>
             await _uow.UnidadeMedidaRepository.LitarAsync(filtro);

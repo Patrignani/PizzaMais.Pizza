@@ -10,7 +10,7 @@ namespace PizzaMais.Pizza.Communs.Interfaces.Repository
         Task<int> InserirAsync(UnidadeMedida model);
         Task AtualizarAsync(UnidadeMedida model);
         Task<IEnumerable<UnidadeMedida>> LitarAsync(UnidadeMedidaFiltro unidadeMedidaFiltro);
-        Task<UnidadeMedida> ObterAsync(UnidadeMedidaFiltro unidadeMedidaFiltro);
+        Task<UnidadeMedida> ObterAsync(int id);
         Task DeletarAsync(int id);
     }
 }

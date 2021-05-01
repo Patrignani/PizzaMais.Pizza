@@ -25,8 +25,8 @@ namespace PizzaMais.Pizza.Core.Repository
         public async Task<IEnumerable<Borda>> LitarAsync(BordaFiltro filtro) =>
             await _connection.QueryAsync<Borda>(BordaSql.Consulta(filtro), filtro, transaction: _transaction).ConfigureAwait(false);
 
-        public async Task<Borda> ObterAsync(BordaFiltro filtro) =>
-            await _connection.QueryFirstOrDefaultAsync<Borda>(BordaSql.Consulta(filtro), filtro, transaction: _transaction).ConfigureAwait(false);
+        public async Task<Borda> ObterAsync(int id) =>
+            await _connection.QueryFirstOrDefaultAsync<Borda>(BordaSql.ObterPorId(), new { Id = id }, transaction: _transaction).ConfigureAwait(false);
 
         public async Task DeletarAsync(int id) => 
             await _connection.ExecuteAsync(BordaSql.Delete(), new { Id = id }).ConfigureAwait(false);

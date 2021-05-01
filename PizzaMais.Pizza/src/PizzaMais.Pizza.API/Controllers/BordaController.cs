@@ -18,7 +18,7 @@ namespace PizzaMais.Pizza.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAsync(BordaFiltro filtro) => Ok(await _service.ListarAsync(filtro));
+        public async Task<IActionResult> GetAsync([FromQuery]BordaFiltro filtro) => Ok(await _service.ListarAsync(filtro));
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAsync(int id) => Ok(await _service.ObterPorIdAsync(id));

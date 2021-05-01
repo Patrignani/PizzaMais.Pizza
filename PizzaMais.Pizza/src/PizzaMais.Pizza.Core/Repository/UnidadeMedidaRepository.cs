@@ -25,8 +25,8 @@ namespace PizzaMais.Pizza.Core.Repository
         public async Task<IEnumerable<UnidadeMedida>> LitarAsync(UnidadeMedidaFiltro unidadeMedidaFiltro) =>
             await _connection.QueryAsync<UnidadeMedida>(UnidadeMedidaSql.Consulta(unidadeMedidaFiltro), unidadeMedidaFiltro, transaction: _transaction).ConfigureAwait(false);
 
-        public async Task<UnidadeMedida> ObterAsync(UnidadeMedidaFiltro unidadeMedidaFiltro) =>
-            await _connection.QueryFirstOrDefaultAsync<UnidadeMedida>(UnidadeMedidaSql.Consulta(unidadeMedidaFiltro), unidadeMedidaFiltro, transaction: _transaction).ConfigureAwait(false);
+        public async Task<UnidadeMedida> ObterAsync(int id) =>
+            await _connection.QueryFirstOrDefaultAsync<UnidadeMedida>(UnidadeMedidaSql.ObterPorId(), new { Id = id }, transaction: _transaction).ConfigureAwait(false);
 
         public async Task DeletarAsync(int id) => await _connection.ExecuteAsync(UnidadeMedidaSql.Delete(),new {Id =id }).ConfigureAwait(false);
     }

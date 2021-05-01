@@ -2,8 +2,6 @@
 using PizzaMais.Pizza.Communs.Model;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PizzaMais.Pizza.Communs.Interfaces.Service
@@ -32,15 +30,7 @@ namespace PizzaMais.Pizza.Communs.Interfaces.Service
 
         public async Task DeletarAsync(int id) => await _uow.BordaRepository.DeletarAsync(id);
 
-        public async Task<Borda> ObterPorIdAsync(int id)
-        {
-            var filtro = new BordaFiltro
-            {
-                Id = id
-            };
-
-            return await _uow.BordaRepository.ObterAsync(filtro);
-        }
+        public async Task<Borda> ObterPorIdAsync(int id) => await _uow.BordaRepository.ObterAsync(id);
 
         public async Task<IEnumerable<Borda>> ListarAsync(BordaFiltro filtro) =>
             await _uow.BordaRepository.LitarAsync(filtro);

@@ -2,6 +2,7 @@
 using PizzaMais.Pizza.Core.Utils;
 using SqlKata;
 using System;
+using System.Linq;
 
 namespace PizzaMais.Pizza.Core.SqlCommands
 {
@@ -37,8 +38,11 @@ namespace PizzaMais.Pizza.Core.SqlCommands
             if (filtro.Ativo.HasValue)
                 query.Where("Ativo", "@Ativo");
 
-            return query.ObterString();
+            query.MontarIngredienteOrderBy(filtro)
+                .Offset(filtro.Offset)
+                .Limit(filtro.Limit);
 
+            return query.ObterString();
         }
 
         public static string Inserir() =>
@@ -65,6 +69,35 @@ namespace PizzaMais.Pizza.Core.SqlCommands
 
         public static string Delete() =>
             @"DELETE [dbo].[Ingrediente]  WHERE [Id] = @Id";
+
+        public static Query MontarIngredienteOrderBy(this Query query, IngredienteFiltro filtro)
+        {
+            if (filtro.OrderbyAsc.Any())
+            {
+                if (filtro.OrderbyAsc.Any(x => x.ToLower().Trim() == "nome"))
+                    query.OrderBy("Nome");
+
+                if (filtro.OrderbyAsc.Any(x => x.ToLower().Trim() == "id"))
+                    query.OrderBy("Id");
+
+                if (filtro.OrderbyAsc.Any(x => x.ToLower().Trim() == "ativo"))
+                    query.OrderBy("Ativo");
+            }
+
+            if (filtro.OrderbyDesc.Any())
+            {
+                if (filtro.OrderbyDesc.Any(x => x.ToLower().Trim() == "nome"))
+                    query.OrderByDesc("Nome");
+
+                if (filtro.OrderbyDesc.Any(x => x.ToLower().Trim() == "id"))
+                    query.OrderByDesc("Id");
+
+                if (filtro.OrderbyDesc.Any(x => x.ToLower().Trim() == "ativo"))
+                    query.OrderByDesc("Ativo");
+
+            }
+            return query;
+        }
 
     }
 }

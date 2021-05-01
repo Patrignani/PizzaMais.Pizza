@@ -10,7 +10,7 @@ namespace PizzaMais.Pizza.Communs.Interfaces.Repository
         Task<int> InserirAsync(Borda model);
         Task AtualizarAsync(Borda model);
         Task<IEnumerable<Borda>> LitarAsync(BordaFiltro filtro);
-        Task<Borda> ObterAsync(BordaFiltro filtro);
+        Task<Borda> ObterAsync(int id);
         Task DeletarAsync(int id);
     }
 }

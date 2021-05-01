@@ -1,6 +1,8 @@
-﻿namespace PizzaMais.Pizza.Communs.filters
+﻿using PizzaMais.Pizza.Communs.Filters;
+
+namespace PizzaMais.Pizza.Communs.filters
 {
-    public class IngredienteFiltro
+    public class IngredienteFiltro : FiltroBase
     {
         public int? Id { get; set; }
         public string Nome { get; set; }
