@@ -20,7 +20,6 @@ namespace PizzaMais.Pizza.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.Register(Configuration);
             services.AddCors();
             services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal);
