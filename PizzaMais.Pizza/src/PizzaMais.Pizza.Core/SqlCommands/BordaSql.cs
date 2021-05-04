@@ -23,16 +23,16 @@ namespace PizzaMais.Pizza.Core.SqlCommands
             var query = consultas();
 
             if (filtro.Id.HasValue)
-                query.WhereRaw("CAST(Id AS NVARCHAR) LIKE CAST(@Id AS NVARCHAR) + '%' ");
+                query.WhereRaw("CAST(\"Id\" AS VARCHAR(8)) LIKE CONCAT(CAST(@Id AS VARCHAR(8)),'%') ");
 
             if (!String.IsNullOrEmpty(filtro.Nome))
-                query.WhereLike("Nome", "@Nome + '%'");
+                query.WhereLike("Nome", "CONCAT(@Nome,'%')");
 
             if (filtro.Ativo.HasValue)
                 query.Where("Ativo", "@Ativo");
 
             if (filtro.Preco.HasValue)
-                query.WhereRaw("Preco >= @Preco");
+                query.WhereRaw("\"Preco\" >= @Preco");
 
             query.MontarIngredienteOrderBy(filtro)
                .Offset(filtro.Offset)
@@ -41,33 +41,16 @@ namespace PizzaMais.Pizza.Core.SqlCommands
             return query.ObterString();
         }
 
-        public static string Inserir() =>
-             @"INSERT INTO [dbo].[Borda]
-            ([Nome]
-            ,[Preco]
-            ,[Ativo]
-            ,[DataCriacao]
-            ,[UsuarioIdCriacao])
-         OUTPUT Inserted.Id
-         VALUES
-            (@Nome,
-            @Preco,
-            @Ativo,
-            @DataCriacao,
-            @UsuarioIdCriacao)";
+        public static string Inserir() => SqlHelper.Inserir("Borda", new string[] {
+            "Nome","Preco","Ativo", "DataCriacao", "UsuarioIdCriacao"
+        });
 
         public static string Update() =>
-            @"UPDATE [dbo].[Borda]
-            SET [Nome] = @Nome
-            ,[Preco] = @Preco
-            ,[Ativo] = @Ativo
-            ,[DataAtualizacao] = @DataAtualizacao
-            ,[UsuarioIdAtualizacao] = @UsuarioIdAtualizacao
-            WHERE 
-            [Id] = @Id";
+            SqlHelper.Update("Borda", new string[] {
+            "Nome", "Preco","Ativo", "DataAtualizacao", "UsuarioIdAtualizacao"
+        });
 
-        public static string Delete() =>
-            @"DELETE [dbo].[Borda]  WHERE [Id] = @Id";
+        public static string Delete() => SqlHelper.Delete("Borda");
 
         public static Query MontarIngredienteOrderBy(this Query query, BordaFiltro filtro)
         {
@@ -99,7 +82,6 @@ namespace PizzaMais.Pizza.Core.SqlCommands
 
                 if (filtro.OrderbyDesc.Any(x => x.ToLower().Trim() == "ativo"))
                     query.OrderByDesc("Ativo");
-
             }
 
             return query;

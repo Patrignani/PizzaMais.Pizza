@@ -24,11 +24,11 @@ namespace PizzaMais.Pizza.Core.SqlCommands
             var query = consultas();
 
             if (filtro.Id.HasValue)
-                query.WhereRaw("CAST(Id AS NVARCHAR) LIKE CAST(@Id AS NVARCHAR) + '%' ");
+                query.WhereRaw("CAST(\"Id\" AS VARCHAR(8)) LIKE CONCAT(CAST(@Id AS VARCHAR(8)),'%') ");
 
             if (!String.IsNullOrEmpty(filtro.Nome))
             {
-                query.WhereLike("Nome", "@Nome + '%'");
+                query.WhereLike("Nome", "CONCAT(@Nome,'%')");
             }
             else if (!String.IsNullOrEmpty(filtro.NomeIgual))
             {
@@ -45,30 +45,15 @@ namespace PizzaMais.Pizza.Core.SqlCommands
             return query.ObterString();
         }
 
-        public static string Inserir() =>
-            @"INSERT INTO [dbo].[Ingrediente]
-            ([Nome]
-            ,[Ativo]
-            ,[DataCriacao]
-            ,[UsuarioIdCriacao])
-        OUTPUT Inserted.Id
-         VALUES
-            (@Nome,
-            @Ativo,
-            @DataCriacao,
-            @UsuarioIdCriacao)";
+        public static string Inserir() => SqlHelper.Inserir("Ingrediente", new string[] {
+            "Nome","Ativo", "DataCriacao", "UsuarioIdCriacao"
+        });
 
-        public static string Update() =>
-            @"UPDATE [dbo].[Ingrediente]
-            SET [Nome] = @Nome
-            ,[Ativo] = @Ativo
-            ,[DataAtualizacao] = @DataAtualizacao
-            ,[UsuarioIdAtualizacao] = @UsuarioIdAtualizacao
-            WHERE 
-            [Id] = @Id";
+        public static string Update() => SqlHelper.Update("Ingrediente", new string[] {
+            "Nome", "Ativo", "DataAtualizacao", "UsuarioIdAtualizacao"
+        });
 
-        public static string Delete() =>
-            @"DELETE [dbo].[Ingrediente]  WHERE [Id] = @Id";
+        public static string Delete() => SqlHelper.Delete("Ingrediente");
 
         public static Query MontarIngredienteOrderBy(this Query query, IngredienteFiltro filtro)
         {

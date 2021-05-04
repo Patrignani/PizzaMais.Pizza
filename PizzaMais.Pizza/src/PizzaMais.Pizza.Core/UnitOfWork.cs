@@ -1,8 +1,8 @@
-﻿using PizzaMais.Pizza.Communs.Interfaces;
+﻿using Npgsql;
+using PizzaMais.Pizza.Communs.Interfaces;
 using PizzaMais.Pizza.Communs.Interfaces.Repository;
 using PizzaMais.Pizza.Core.Repository;
 using System.Data;
-using System.Data.SqlClient;
 
 namespace PizzaMais.Pizza.Core
 {
@@ -15,7 +15,7 @@ namespace PizzaMais.Pizza.Core
         private IIngredienteRepository _ingredienteRepository = null;
         private IBordaRepository _bordaRepository = null;
 
-        public UnitOfWork(SqlConnection connection)
+        public UnitOfWork(NpgsqlConnection connection)
         {
             _connection = connection;
         }

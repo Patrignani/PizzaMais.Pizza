@@ -2,6 +2,7 @@
 using PizzaMais.Pizza.Communs.filters;
 using PizzaMais.Pizza.Communs.Interfaces.Service;
 using PizzaMais.Pizza.Communs.Model;
+using System;
 using System.Threading.Tasks;
 
 namespace PizzaMais.Pizza.API.Controllers
@@ -18,7 +19,7 @@ namespace PizzaMais.Pizza.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAsync([FromQuery]UnidadeMedidaFiltro filtro) => Ok(await _service.ListarAsync(filtro));
+        public async Task<IActionResult> GetAsync([FromQuery] UnidadeMedidaFiltro filtro) => Ok(await _service.ListarAsync(filtro));
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAsync(int id) => Ok(await _service.ObterPorIdAsync(id));
@@ -26,14 +27,15 @@ namespace PizzaMais.Pizza.API.Controllers
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] UnidadeMedida value)
         {
-            await _service.InserirAsync(value);
 
+            await _service.InserirAsync(value);
             return Ok(value);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] UnidadeMedida value)
         {
+
             if (value.Id == id)
             {
                 await _service.AtualizarAsync(value);

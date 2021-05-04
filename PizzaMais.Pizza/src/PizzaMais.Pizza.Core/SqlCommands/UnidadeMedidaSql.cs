@@ -23,13 +23,13 @@ namespace PizzaMais.Pizza.Core.SqlCommands
             var query = consultas();
 
             if (filtro.Id.HasValue)
-                query.WhereRaw("CAST(Id AS NVARCHAR) LIKE CAST(@Id AS NVARCHAR) + '%' ");
+                query.WhereRaw("CAST(\"Id\" AS VARCHAR(8)) LIKE CONCAT(CAST(@Id AS VARCHAR(8)),'%') ");
 
             if (!String.IsNullOrEmpty(filtro.Nome))
-                query.WhereLike("Nome", "@Nome + '%'");
+                query.WhereLike("Nome", "CONCAT(@Nome,'%')");
 
             if (!String.IsNullOrEmpty(filtro.Sigla))
-                query.WhereLike("Sigla", "@Sigla + '%'");
+                query.WhereLike("Sigla", "CONCAT(@Sigla,'%')");
 
             if (filtro.Ativo.HasValue)
                 query.Where("Ativo", "@Ativo");
@@ -41,33 +41,16 @@ namespace PizzaMais.Pizza.Core.SqlCommands
             return query.ObterString();
         }
 
-        public static string Inserir() =>
-            @"INSERT INTO [dbo].[UnidadeMedida]
-            ([Nome]
-            ,[Sigla]
-            ,[Ativo]
-            ,[DataCriacao]
-            ,[UsuarioIdCriacao])
-        OUTPUT Inserted.Id
-         VALUES
-            (@Nome,
-            @Sigla,
-            @Ativo,
-            @DataCriacao,
-            @UsuarioIdCriacao)";
+        public static string Inserir() => SqlHelper.Inserir("UnidadeMedida", new string[] {
+            "Nome", "Sigla","Ativo", "DataCriacao", "UsuarioIdCriacao"
+        });
 
-        public static string Update() =>
-            @"UPDATE [dbo].[UnidadeMedida]
-            SET [Nome] = @Nome
-            ,[Sigla] = @Sigla
-            ,[Ativo] = @Ativo
-            ,[DataAtualizacao] = @DataAtualizacao
-            ,[UsuarioIdAtualizacao] = @UsuarioIdAtualizacao
-            WHERE 
-            [Id] = @Id";
+        public static string Update() => SqlHelper.Update("UnidadeMedida", new string[] {
+            "Nome", "Sigla", "Ativo", "DataAtualizacao", "UsuarioIdAtualizacao"
+        });
 
-        public static string Delete() =>
-            @"DELETE [dbo].[UnidadeMedida]  WHERE [Id] = @Id";
+        public static string Delete() => SqlHelper.Delete("UnidadeMedida");
+
 
         public static Query MontarUnidadeMedidaOrderBy(this Query query, UnidadeMedidaFiltro filtro)
         {
