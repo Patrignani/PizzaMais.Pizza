@@ -63,7 +63,7 @@ namespace PizzaMais.Pizza.Core.SqlCommands
                     query.OrderBy("Id");
 
                 if (filtro.OrderbyAsc.Any(x => x.ToLower().Trim() == "preco"))
-                    query.OrderBy("preco");
+                    query.OrderBy("Preco");
 
                 if (filtro.OrderbyAsc.Any(x => x.ToLower().Trim() == "ativo"))
                     query.OrderBy("Ativo");
@@ -77,8 +77,8 @@ namespace PizzaMais.Pizza.Core.SqlCommands
                 if (filtro.OrderbyDesc.Any(x => x.ToLower().Trim() == "id"))
                     query.OrderByDesc("Id");
 
-                if (filtro.OrderbyAsc.Any(x => x.ToLower().Trim() == "preco"))
-                    query.OrderByDesc("preco");
+                if (filtro.OrderbyDesc.Any(x => x.ToLower().Trim() == "preco"))
+                    query.OrderByDesc("Preco");
 
                 if (filtro.OrderbyDesc.Any(x => x.ToLower().Trim() == "ativo"))
                     query.OrderByDesc("Ativo");
