@@ -1,4 +1,5 @@
-﻿using PizzaMais.Pizza.Communs.filters;
+﻿using PizzaMais.Pizza.Communs.DTOs;
+using PizzaMais.Pizza.Communs.filters;
 using PizzaMais.Pizza.Communs.Interfaces;
 using PizzaMais.Pizza.Communs.Interfaces.Service;
 using PizzaMais.Pizza.Communs.Model;
@@ -31,11 +32,14 @@ namespace PizzaMais.Pizza.Core.Service
             await _uow.IngredienteRepository.AtualizarAsync(model);
         }
 
+        public async Task<IEnumerable<IngredienteSimplificado>> LitarSimplificadoAsync(IngredienteFiltro filtro) =>
+            await _uow.IngredienteRepository.LitarSimplificadoAsync(filtro);
+
         public async Task DeletarAsync(int id) => await _uow.IngredienteRepository.DeletarAsync(id);
         public async Task<Ingrediente> ObterPorIdAsync(int id) => await _uow.IngredienteRepository.ObterAsync(id);
 
         public async Task<IEnumerable<Ingrediente>> ListarAsync(IngredienteFiltro filtro) =>
-            await _uow.IngredienteRepository.LitarAsync(filtro);
+            await _uow.IngredienteRepository.ListarAsync(filtro);
 
         public async Task<Ingrediente> ObterOuInserirAsync(string nome)
         {
@@ -43,7 +47,7 @@ namespace PizzaMais.Pizza.Core.Service
             {
                 NomeIgual = nome.Trim()
             };
-            var model = (await _uow.IngredienteRepository.LitarAsync(filtro)).FirstOrDefault();
+            var model = (await _uow.IngredienteRepository.ListarAsync(filtro)).FirstOrDefault();
 
             if (model == null)
             {

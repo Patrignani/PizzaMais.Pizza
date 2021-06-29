@@ -19,6 +19,31 @@ namespace PizzaMais.Pizza.Core.SqlCommands
             return query.ObterString();
         }
 
+        public static string ConsultaSimpificada(IngredienteFiltro filtro)
+        {
+            var query = new Query("Ingrediente").Select("Id", "Nome");
+
+            if (!String.IsNullOrEmpty(filtro.Nome))
+                query.WhereLike("Nome", "LOWER(CONCAT(@Nome,'%'))");
+
+            if (filtro.Ativo.HasValue)
+                query.Where("Ativo", "@Ativo");
+
+            query
+                .Limit(8)
+                .OrderBy("Nome");
+
+            return query.ObterString();
+        }
+
+        public static string ObterPorNomes()
+        {
+            var query = consultas()
+                 .WhereRaw("\"Nome\" = any(@Nomes)");
+
+            return query.ObterString();
+        }
+
         public static string Consulta(IngredienteFiltro filtro)
         {
             var query = consultas();
@@ -28,7 +53,7 @@ namespace PizzaMais.Pizza.Core.SqlCommands
 
             if (!String.IsNullOrEmpty(filtro.Nome))
             {
-                query.WhereLike("Nome", "CONCAT(@Nome,'%')");
+                query.WhereLike("Nome", "LOWER(CONCAT(@Nome,'%'))");
             }
             else if (!String.IsNullOrEmpty(filtro.NomeIgual))
             {

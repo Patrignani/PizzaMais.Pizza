@@ -1,6 +1,10 @@
-﻿using SqlKata;
+﻿using Npgsql;
+using SqlKata;
 using SqlKata.Compilers;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using System.Text;
 
 namespace PizzaMais.Pizza.Core.Utils
@@ -45,7 +49,9 @@ namespace PizzaMais.Pizza.Core.Utils
             return script;
         }
 
-        public static string Delete(string tabela) => "DELETE FROM public.\""+ tabela + "\" WHERE \"Id\" = @Id";
+        public static string Delete(string tabela) => "DELETE FROM public.\"" + tabela + "\" WHERE \"Id\" = @Id";
+
+        public static string DeleteBulk(string tabela) => $"DELETE FROM public.{tabela.FormatNpgsql()} WHERE ${"Id".FormatNpgsql()} in @Id";
 
         public static string Update(string tabela, IEnumerable<string> campos)
         {
@@ -60,5 +66,39 @@ namespace PizzaMais.Pizza.Core.Utils
 
             return script;
         }
+
+
+        public static DataTable FormatarInsertBulk<T>(T[] values, out List<string> colunas)
+        {
+            var table = new DataTable();
+            colunas = new List<string>();
+
+            foreach (var prop in values[0].GetType().GetProperties())
+            {
+                if (prop.Name != "Id")
+                {
+                    table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
+                    colunas.Add(prop.Name);
+                }
+            }
+
+            for (var count = 0; count < values.Length; count++)
+            {
+                var dataRow = table.NewRow();
+                var props = values[count].GetType().GetProperties().Where(x => x.Name != "Id").ToArray();
+                for (var propCount = 0; propCount < props.Length; propCount++)
+                {
+                    var value = props[propCount].GetValue(values[count], null);
+                    dataRow[propCount] = value ?? DBNull.Value;
+                }
+                table.Rows.Add(dataRow);
+            }
+
+            return table;
+        }
+
+
+        public static string FormatNpgsql(this IEnumerable<string> campos) => String.Join(",", campos.Select(s => String.Format("\"{0}\"", s)));
+        public static string FormatNpgsql(this string tabela) => String.Join(",", new string[] { tabela }.Select(s => String.Format("\"{0}\"", s)));
     }
 }

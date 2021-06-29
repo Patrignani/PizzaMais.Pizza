@@ -14,6 +14,8 @@ namespace PizzaMais.Pizza.Core
         private IUnidadeMedidaRepository _unidadeMedidaRepository = null;
         private IIngredienteRepository _ingredienteRepository = null;
         private IBordaRepository _bordaRepository = null;
+        private IPizzaIngredienteRepository _pizzaIngredienteRepository = null;
+        private IPizzaRepository _pizzaRepository = null;
 
         public UnitOfWork(NpgsqlConnection connection)
         {
@@ -21,8 +23,10 @@ namespace PizzaMais.Pizza.Core
         }
 
         public IUnidadeMedidaRepository UnidadeMedidaRepository => _unidadeMedidaRepository != null ? _unidadeMedidaRepository : _unidadeMedidaRepository = new UnidadeMedidaRepository(_connection, _transaction);
-        public IIngredienteRepository IngredienteRepository => _unidadeMedidaRepository != null ? _ingredienteRepository : _ingredienteRepository = new IngredienteRepository(_connection, _transaction);
-        public IBordaRepository BordaRepository => _unidadeMedidaRepository != null ? _bordaRepository : _bordaRepository = new BordaRepository(_connection, _transaction);
+        public IIngredienteRepository IngredienteRepository => _ingredienteRepository != null ? _ingredienteRepository : _ingredienteRepository = new IngredienteRepository(_connection, _transaction);
+        public IBordaRepository BordaRepository => _bordaRepository != null ? _bordaRepository : _bordaRepository = new BordaRepository(_connection, _transaction);
+        public IPizzaIngredienteRepository PizzaIngredienteRepository => _pizzaIngredienteRepository != null ? _pizzaIngredienteRepository : _pizzaIngredienteRepository = new PizzaIngredienteRepository(_connection, _transaction);
+        public IPizzaRepository PizzaRepository => _pizzaRepository != null ? _pizzaRepository : _pizzaRepository = new PizzaRepository(_connection, _transaction);
 
         public void Begin()
         {

@@ -17,7 +17,8 @@ namespace PizzaMais.Pizza.Core.Middleware
             services.AddScoped<IIngredienteService, IngredienteService > ();
             services.AddScoped<IUnidadeMedidaService, UnidadeMedidaService>();
             services.AddScoped<IBordaService, BordaService>();
-
+            services.AddScoped<IPizzaService, PizzaService>();
+            
             return services;
         }
     }

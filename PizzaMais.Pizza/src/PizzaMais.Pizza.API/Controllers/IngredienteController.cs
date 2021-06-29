@@ -52,5 +52,9 @@ namespace PizzaMais.Pizza.API.Controllers
 
             return Ok();
         }
+
+        [HttpGet("LitarSimplificado")]
+        public async Task<IActionResult> LitarSimplificadoAsync([FromQuery] IngredienteFiltro filtro) => Ok(await _service.LitarSimplificadoAsync(filtro));
+
     }
 }
