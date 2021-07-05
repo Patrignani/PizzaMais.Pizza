@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using PizzaMais.Pizza.Communs.DTOs;
+using PizzaMais.Pizza.Communs.Filters;
 using PizzaMais.Pizza.Communs.Interfaces.Repository;
 using PizzaMais.Pizza.Core.SqlCommands;
 using System;
@@ -17,37 +18,39 @@ namespace PizzaMais.Pizza.Core.Repository
 
         }
 
+        public async Task AtualizarAsync(Communs.Model.Pizza model) =>
+             await _connection.ExecuteAsync(PizzaSql.Update(), model, transaction: _transaction).ConfigureAwait(false);
+
         public async Task<int> InserirAsync(Communs.Model.Pizza model) =>
             await _connection.ExecuteScalarAsync<int>(PizzaSql.Inserir(), model, transaction: _transaction).ConfigureAwait(false);
+
+        public async Task DeletarAsync(int id) =>
+        await _connection.ExecuteAsync(PizzaSql.Delete(), new { Id = id }).ConfigureAwait(false);
+
+        public async Task<IEnumerable<PizzaObter>> ListarAsync(PizzaFiltro filtro) =>
+             await _connection.QueryAsync<PizzaObter>(PizzaSql.Consulta(filtro), filtro, transaction: _transaction).ConfigureAwait(false);
 
         public async Task<PizzaObter> ObterPorIdAsync(int id)
         {
             var pizzaDictionary = new Dictionary<int, PizzaObter>();
 
-            try
-            {
-                var pizza = (await _connection.QueryAsync<PizzaObter, IngredienteLista, PizzaObter>(PizzaSql.ObterPorId(),
-                     (pizza, ingrediente) =>
+            var pizza = (await _connection.QueryAsync<PizzaObter, IngredienteLista, PizzaObter>(PizzaSql.ObterPorId(),
+                 (pizza, ingrediente) =>
+                 {
+                     PizzaObter PizzaObterEntidade;
+
+                     if (!pizzaDictionary.TryGetValue(pizza.Id, out PizzaObterEntidade))
                      {
-                         PizzaObter PizzaObterEntidade;
+                         PizzaObterEntidade = pizza;
+                         pizzaDictionary.Add(PizzaObterEntidade.Id, PizzaObterEntidade);
+                     }
 
-                         if (!pizzaDictionary.TryGetValue(pizza.Id, out PizzaObterEntidade))
-                         {
-                             PizzaObterEntidade = pizza;
-                             pizzaDictionary.Add(PizzaObterEntidade.Id, PizzaObterEntidade);
-                         }
+                     PizzaObterEntidade.Ingredientes.Add(ingrediente);
+                     return PizzaObterEntidade;
+                 }, new { Id = id },
+                 splitOn: "Text", transaction: _transaction).ConfigureAwait(false)).Distinct().ToList();
 
-                         PizzaObterEntidade.Ingredientes.Add(ingrediente);
-                         return PizzaObterEntidade;
-                     }, new { Id = id },
-                     splitOn: "Text", transaction: _transaction).ConfigureAwait(false)).Distinct().ToList();
-
-                return pizza.FirstOrDefault();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            return pizza.FirstOrDefault();
         }
 
 

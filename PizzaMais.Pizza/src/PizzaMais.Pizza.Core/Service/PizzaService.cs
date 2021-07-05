@@ -1,4 +1,5 @@
 ﻿using PizzaMais.Pizza.Communs.DTOs;
+using PizzaMais.Pizza.Communs.Filters;
 using PizzaMais.Pizza.Communs.Interfaces;
 using PizzaMais.Pizza.Communs.Interfaces.Service;
 using PizzaMais.Pizza.Communs.Model;
@@ -17,6 +18,27 @@ namespace PizzaMais.Pizza.Core.Service
             _uow = uow;
         }
 
+        public async Task<PizzaObter> AtualizarAsync(PizzaAtualizar model)
+        {
+            _uow.Begin();
+            try
+            {
+                var entidade = model.ObterModel(1);
+                await _uow.PizzaRepository.AtualizarAsync(entidade).ConfigureAwait(false);
+                await CriarIngredientesAsync(entidade);
+                await AdicionarIngredientesAsync(entidade);
+                await DeletarIngredientesAsync(entidade);
+
+                _uow.Commit();
+
+                return new PizzaObter(entidade);
+            }
+            catch (Exception e)
+            {
+                throw e.GetBaseException();
+            }
+        }
+
         public async Task<PizzaObter> InserirAsync(PizzaInserir pizza)
         {
             _uow.Begin();
@@ -26,7 +48,6 @@ namespace PizzaMais.Pizza.Core.Service
                 model.Id = await _uow.PizzaRepository.InserirAsync(model).ConfigureAwait(false);
                 await CriarIngredientesAsync(model);
                 await AdicionarIngredientesAsync(model);
-                await DeletarIngredientesAsync(model.Ingredientes);
 
                 _uow.Commit();
 
@@ -37,6 +58,10 @@ namespace PizzaMais.Pizza.Core.Service
                 throw e.GetBaseException();
             }
         }
+
+        public async Task<IEnumerable<PizzaObter>> ListarAsync(PizzaFiltro filtro) => await _uow.PizzaRepository.ListarAsync(filtro).ConfigureAwait(false);
+
+        public async Task DeletarAsync(int id) => await _uow.PizzaRepository.DeletarAsync(id);
 
         public async Task<PizzaObter> ObterPorIdAsync(int id) => await _uow.PizzaRepository.ObterPorIdAsync(id).ConfigureAwait(false);
 
@@ -95,11 +120,13 @@ namespace PizzaMais.Pizza.Core.Service
             }
         }
 
-        private async Task DeletarIngredientesAsync(IEnumerable<IngredienteLista> lista)
+        private async Task DeletarIngredientesAsync(Communs.Model.Pizza model)
         {
-            var deletar = lista.Where(x => x.Status == Communs.Enum.StatusLista.Excluir).Select(x => x.Id);
+            var deletar = model.Ingredientes.Where(x => x.Status == Communs.Enum.StatusLista.Excluir).Select(x => x.Id);
             if (deletar.Any())
-                await _uow.PizzaIngredienteRepository.DeletarLoteAsync(deletar);
+                await _uow.PizzaIngredienteRepository.DeletarLoteAsync(model.Id, deletar);
+
+            model.Ingredientes = model.Ingredientes.Where(x => x.Status != Communs.Enum.StatusLista.Excluir).ToList();
         }
     }
 }

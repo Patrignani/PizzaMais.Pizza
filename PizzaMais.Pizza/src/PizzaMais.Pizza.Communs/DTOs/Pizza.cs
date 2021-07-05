@@ -48,4 +48,24 @@ namespace PizzaMais.Pizza.Communs.DTOs
             Ingredientes = pizza.Ingredientes;
         }
     }
+
+    public class PizzaAtualizar: PizzaBasico
+    {
+        public int Id { get; set; }
+
+        public Model.Pizza ObterModel(int usuarioId)
+        {
+            return new Model.Pizza
+            {
+                Ativo = Ativo,
+                Codigo = Codigo,
+                DataCriacao = DateTime.UtcNow,
+                Nome = Nome,
+                Preco = Preco,
+                UsuarioIdCriacao = usuarioId,
+                Ingredientes = Ingredientes,
+                Id = Id
+            };
+        }
+    }
 }

@@ -7,6 +7,6 @@ namespace PizzaMais.Pizza.Communs.Interfaces.Repository
     public interface IPizzaIngredienteRepository
     {
         Task InserirLoteAsync(IEnumerable<PizzaIngrediente> models);
-        Task DeletarLoteAsync(IEnumerable<int> ids);
+        Task DeletarLoteAsync(int pizzaId, IEnumerable<int> IngredienteIds);
     }
 }

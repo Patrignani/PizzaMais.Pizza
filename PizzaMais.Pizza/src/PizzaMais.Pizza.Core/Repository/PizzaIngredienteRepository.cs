@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using PizzaMais.Pizza.Communs.Interfaces.Repository;
 using Dapper;
 using PizzaMais.Pizza.Core.SqlCommands;
+using System.Linq;
 
 namespace PizzaMais.Pizza.Core.Repository
 {
@@ -16,7 +17,8 @@ namespace PizzaMais.Pizza.Core.Repository
 
         public async Task InserirLoteAsync(IEnumerable<PizzaIngrediente> models) => await InsertBulkAsync(models, "PizzaIngrediente");
 
-        public async Task DeletarLoteAsync(IEnumerable<int> ids) => await _connection.ExecuteAsync(PizzaIngredienteSql.Delete(), new { Id = ids },
+        public async Task DeletarLoteAsync(int pizzaId, IEnumerable<int> IngredienteIds) => await _connection.ExecuteAsync(PizzaIngredienteSql.Delete(),
+            new { PizzaId = pizzaId, IngredienteIds = IngredienteIds.ToList() },
             transaction: _transaction);
     }
 }
